@@ -47,7 +47,6 @@ import com.android.internal.telephony.Phone;
 import com.android.internal.telephony.CallManager;
 import com.android.internal.telephony.TelephonyIntents;
 import com.android.internal.telephony.CommandException;
-import com.android.internal.telephony.IOemHookCallback;
 import com.android.internal.telephony.QosSpec;
 
 import java.util.List;
@@ -197,47 +196,6 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
                     synchronized (request) {
                         request.notifyAll();
                     }
-                    break;
-
-                case CMD_INVOKE_OEM_RIL_REQUEST:
-                    request = (MainThreadRequest)msg.obj;
-                    onCompleted = obtainMessage(EVENT_INVOKE_OEM_RIL_REQUEST, request);
-                    mPhone.invokeOemRilRequestRaw((byte[])request.argument, onCompleted);
-                    break;
-
-                case EVENT_INVOKE_OEM_RIL_REQUEST:
-                    ar = (AsyncResult)msg.obj;
-                    request = (MainThreadRequest)ar.userObj;
-                    request.result = ar;
-                    // Wake up the requesting thread
-                    synchronized (request) {
-                        request.notifyAll();
-                    }
-                    break;
-
-                case CMD_INVOKE_OEM_RIL_REQUEST_ASYNC:
-                    requestAsync = (MainThreadRequestAsync) msg.obj;
-                    onCompleted = obtainMessage(
-                            EVENT_INVOKE_OEM_RIL_REQUEST_ASYNC_DONE, requestAsync);
-                    mPhone.invokeOemRilRequestRaw((byte[]) requestAsync.arg1,
-                            onCompleted);
-                    break;
-
-                case EVENT_INVOKE_OEM_RIL_REQUEST_ASYNC_DONE:
-                    ar = (AsyncResult) msg.obj;
-                    requestAsync = (MainThreadRequestAsync) ar.userObj;
-                    requestAsync.result = ar.result;
-                    IOemHookCallback cb = (IOemHookCallback) requestAsync.arg2;
-                    try {
-                        cb.onOemHookResponse((byte[]) (requestAsync.result));
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                    break;
-
-                case EVENT_UNSOL_OEM_HOOK_EXT_APP:
-                    ar = (AsyncResult)msg.obj;
-                    broadcastUnsolOemHookIntent((byte[])(ar.result));
                     break;
 
                 case CMD_SET_TRANSMIT_POWER:
@@ -883,50 +841,6 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
         return mPhone.getPhoneType();
     }
 
-    public int sendOemRilRequestRaw(byte[] request, byte[] response) {
-        int returnValue = 0;
-        // TODO: Check Permissions of the application
-
-        try {
-            AsyncResult result = (AsyncResult)sendRequest(CMD_INVOKE_OEM_RIL_REQUEST, request);
-            if(result.exception == null) {
-                returnValue = 0;
-                if (result.result != null) {
-                    byte[] responseData = (byte[])(result.result);
-                    if(responseData.length > response.length) {
-                        Log.w(LOG_TAG, "Buffer to copy response too small: Response length is " +
-                                responseData.length +  "bytes. Buffer Size is " +
-                                response.length + "bytes.");
-                    }
-                    System.arraycopy(responseData, 0, response, 0, responseData.length);
-                    returnValue = responseData.length;
-                }
-
-            } else {
-                CommandException ex = (CommandException) result.exception;
-                returnValue = ex.getCommandError().ordinal();
-                if(returnValue > 0) returnValue *= -1;
-            }
-        } catch (RuntimeException e) {
-            Log.w(LOG_TAG, "sendOemRilRequestRaw: Runtime Exception");
-            returnValue = (CommandException.Error.GENERIC_FAILURE.ordinal());
-            if(returnValue > 0) returnValue *= -1;
-        }
-
-        return returnValue;
-    }
-
-    public void sendOemRilRequestRawAsync(byte[] request,
-            IOemHookCallback oemHookCb) {
-        try {
-            sendRequestAsync(CMD_INVOKE_OEM_RIL_REQUEST_ASYNC, request,
-                    oemHookCb);
-        } catch (RuntimeException e) {
-            Log.w(LOG_TAG, "sendOemRilRequestRawAsync: Runtime Exception");
-        }
-
-    }
-
     /**
      * Returns the CDMA ERI icon index to display
      */
@@ -988,6 +902,16 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
      */
     public int getLteOnCdmaMode() {
         return mPhone.getLteOnCdmaMode();
+    }
+
+    @Override
+    public int getLteOnGsmMode() throws RemoteException {
+        return mPhone.getLteOnGsmMode();
+    }
+    
+    @Override
+    public void toggleLTE(boolean on) {
+        TelephonyManager.getDefault().toggleLTE(on);
     }
 
     /**

@@ -47,7 +47,6 @@ import com.android.internal.telephony.Phone;
 import com.android.internal.telephony.CallManager;
 import com.android.internal.telephony.TelephonyIntents;
 import com.android.internal.telephony.CommandException;
-import com.android.internal.telephony.IOemHookCallback;
 import com.android.internal.telephony.msim.ITelephonyMSim;
 import com.android.internal.telephony.msim.SubscriptionManager;
 
@@ -245,47 +244,6 @@ public class MSimPhoneInterfaceManager extends ITelephonyMSim.Stub {
                     synchronized (request) {
                         request.notifyAll();
                     }
-                    break;
-
-                case CMD_INVOKE_OEM_RIL_REQUEST:
-                    request = (MainThreadRequest)msg.obj;
-                    onCompleted = obtainMessage(EVENT_INVOKE_OEM_RIL_REQUEST, request);
-                    mPhone.invokeOemRilRequestRaw((byte[])request.argument, onCompleted);
-                    break;
-
-                case EVENT_INVOKE_OEM_RIL_REQUEST:
-                    ar = (AsyncResult)msg.obj;
-                    request = (MainThreadRequest)ar.userObj;
-                    request.result = ar;
-                    // Wake up the requesting thread
-                    synchronized (request) {
-                        request.notifyAll();
-                    }
-                    break;
-
-                case CMD_INVOKE_OEM_RIL_REQUEST_ASYNC:
-                    requestAsync = (MainThreadRequestAsync) msg.obj;
-                    onCompleted = obtainMessage(
-                            EVENT_INVOKE_OEM_RIL_REQUEST_ASYNC_DONE, requestAsync);
-                    mPhone.invokeOemRilRequestRaw((byte[]) requestAsync.arg1,
-                            onCompleted);
-                    break;
-
-                case EVENT_INVOKE_OEM_RIL_REQUEST_ASYNC_DONE:
-                    ar = (AsyncResult) msg.obj;
-                    requestAsync = (MainThreadRequestAsync) ar.userObj;
-                    requestAsync.result = ar.result;
-                    IOemHookCallback cb = (IOemHookCallback) requestAsync.arg2;
-                    try {
-                        cb.onOemHookResponse((byte[]) (requestAsync.result));
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                    break;
-
-                case EVENT_UNSOL_OEM_HOOK_EXT_APP:
-                    ar = (AsyncResult)msg.obj;
-                    broadcastUnsolOemHookIntent((byte[])(ar.result));
                     break;
 
                 default:

@@ -620,33 +620,16 @@ public class CallNotifier extends Handler
 
         // - don't ring for call waiting connections
         // - do this before showing the incoming call panel
-        if (PhoneUtils.isRealIncomingCall(state)) {
-            int mAutoAnswer = Settings.System.getInt(mApplication.mContext.getContentResolver(),
-                    Settings.System.AUTO_ANSWER_TIMEOUT, -1);
 
-            // Reset Auto answer timeout
-            removeMessages(PHONE_AUTO_ANSWER);
-
-            startIncomingCallQuery(c);
-
-            // If Auto Answer feature has been enabled, the call is automatically
-            // answered after a timeout value selected by the user.
-            if (mAutoAnswer != -1) {
-                Log.d(LOG_TAG, "Will auto-answer in " + mAutoAnswer/1000 + " seconds");
-                Message message = Message.obtain(this, PHONE_AUTO_ANSWER);
-                sendMessageDelayed(message, mAutoAnswer);
-            }
-        } else {
-            if (VDBG) log("- starting call waiting tone...");
-            if (mCallWaitingTonePlayer == null) {
-                mCallWaitingTonePlayer = new InCallTonePlayer(InCallTonePlayer.TONE_CALL_WAITING);
-                mCallWaitingTonePlayer.start();
-            }
-            // in this case, just fall through like before, and call
-            // showIncomingCall().
-            if (DBG) log("- showing incoming call (this is a WAITING call)...");
-            showIncomingCall();
+        if (VDBG) log("- starting call waiting tone...");
+        if (mCallWaitingTonePlayer == null) {
+            mCallWaitingTonePlayer = new InCallTonePlayer(InCallTonePlayer.TONE_CALL_WAITING);
+            mCallWaitingTonePlayer.start();
         }
+        // in this case, just fall through like before, and call
+        // showIncomingCall().
+        if (DBG) log("- showing incoming call (this is a WAITING call)...");
+        showIncomingCall();
 
         // Note we *don't* post a status bar notification here, since
         // we're not necessarily ready to actually show the incoming call

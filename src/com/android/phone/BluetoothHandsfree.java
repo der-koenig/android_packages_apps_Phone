@@ -406,7 +406,8 @@ public class BluetoothHandsfree {
             try {
                 mIsWbs = wbs;
                 if (wbs) {
-                    mOutgoingSco = device.createScoWbsSocket();
+                    //mOutgoingSco = device.createScoWbsSocket();
+                    failedScoConnect();
                 } else {
                     mOutgoingSco = device.createScoSocket();
                 }
