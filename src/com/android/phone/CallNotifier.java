@@ -620,16 +620,19 @@ public class CallNotifier extends Handler
 
         // - don't ring for call waiting connections
         // - do this before showing the incoming call panel
-
-        if (VDBG) log("- starting call waiting tone...");
-        if (mCallWaitingTonePlayer == null) {
-            mCallWaitingTonePlayer = new InCallTonePlayer(InCallTonePlayer.TONE_CALL_WAITING);
-            mCallWaitingTonePlayer.start();
+        if (PhoneUtils.isRealIncomingCall(state)) {
+            startIncomingCallQuery(c);
+        } else {
+            if (VDBG) log("- starting call waiting tone...");
+            if (mCallWaitingTonePlayer == null) {
+                mCallWaitingTonePlayer = new InCallTonePlayer(InCallTonePlayer.TONE_CALL_WAITING);
+                mCallWaitingTonePlayer.start();
+            }
+            // in this case, just fall through like before, and call
+            // showIncomingCall().
+            if (DBG) log("- showing incoming call (this is a WAITING call)...");
+            showIncomingCall();
         }
-        // in this case, just fall through like before, and call
-        // showIncomingCall().
-        if (DBG) log("- showing incoming call (this is a WAITING call)...");
-        showIncomingCall();
 
         // Note we *don't* post a status bar notification here, since
         // we're not necessarily ready to actually show the incoming call
