@@ -543,7 +543,8 @@
         <activity android:name="SelectSubscription"
             android:label="@string/callind_multi_sim"
             android:configChanges="orientation|keyboardHidden"
-            android:theme="@android:style/Theme.Holo.DialogWhenLarge">
+            android:noHistory="true"
+            android:theme="@android:style/Theme.Holo.Dialog">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.MAIN" />
