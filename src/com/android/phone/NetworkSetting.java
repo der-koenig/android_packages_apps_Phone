@@ -415,14 +415,20 @@ public class NetworkSetting extends PreferenceActivity
             if (result != null){
                 displayEmptyNetworkList(false);
 
+                String rat;
+                String summaryText = "";
+
                 // create a preference for each item in the list.
                 // just use the operator name instead of the mildly
                 // confusing mcc/mnc.
                 for (OperatorInfo ni : result) {
                     Preference carrier = new Preference(this, null);
-                    carrier.setTitle(getNetworkTitle(ni)
-                            + " (" + ni.getOperatorRat() + ", "
-                            + ni.getState().toString().toLowerCase() + ")");
+                    carrier.setTitle(getNetworkTitle(ni));
+                    rat = ni.getOperatorRat();
+                    if(rat.equals("WCDMA")) summaryText = "3G, ";
+                    if(rat.equals("GSM")) summaryText = "2G, ";
+                    summaryText += ni.getState().toString().toLowerCase();
+                    carrier.setSummary(summaryText);
                     carrier.setPersistent(false);
                     mNetworkList.addPreference(carrier);
                     mNetworkMap.put(carrier, ni);
