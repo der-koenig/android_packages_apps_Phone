@@ -568,7 +568,7 @@ public class MSimPhoneApp extends PhoneApp {
                 initForNewRadioTechnology(subscription);
             } else if (action.equals(TelephonyIntents.ACTION_SERVICE_STATE_CHANGED)) {
                 Phone phone = getPhone(subscription);
-                handleServiceStateChanged(intent, phone);
+                handleServiceStateChanged(intent, phone, subscription);
             } else if (action.equals(TelephonyIntents.ACTION_EMERGENCY_CALLBACK_MODE_CHANGED)) {
                 Phone phone = getPhone(subscription);
                 if (TelephonyCapabilities.supportsEcm(phone)) {
@@ -665,7 +665,7 @@ public class MSimPhoneApp extends PhoneApp {
         cdmaOtaInCallScreenUiState = null;
     }
 
-    private void handleServiceStateChanged(Intent intent, Phone phone) {
+    private void handleServiceStateChanged(Intent intent, Phone phone, int subscription) {
 
         // This function used to handle updating EriTextWidgetProvider
 
@@ -674,7 +674,7 @@ public class MSimPhoneApp extends PhoneApp {
 
         if (ss != null) {
             int state = ss.getState();
-            notificationMgr.updateNetworkSelection(state, phone);
+            notificationMgr.updateNetworkSelection(state, phone, subscription);
         }
     }
 

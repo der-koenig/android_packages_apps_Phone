@@ -41,6 +41,7 @@ import android.provider.CallLog.Calls;
 import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.PhoneLookup;
 import android.provider.Settings;
+import android.telephony.MSimTelephonyManager;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.ServiceState;
 import android.text.TextUtils;
@@ -56,6 +57,8 @@ import com.android.internal.telephony.Connection;
 import com.android.internal.telephony.Phone;
 import com.android.internal.telephony.PhoneBase;
 import com.android.internal.telephony.TelephonyCapabilities;
+
+import static com.android.internal.telephony.MSimConstants.SUBSCRIPTION_KEY;
 
 /**
  * NotificationManager-related utility code for the Phone app.
@@ -117,7 +120,8 @@ public class NotificationMgr implements CallerInfoAsyncQuery.OnQueryCompleteList
     protected int mVMResId = android.R.drawable.stat_notify_voicemail;
 
     // used to track the notification of selected network unavailable
-    private boolean mSelectedUnavailableNotify = false;
+    private boolean[] mSelectedUnavailableNotify =
+            new boolean[MSimTelephonyManager.getDefault().getPhoneCount()];
 
     // Retry params for the getVoiceMailNumber() call; see updateMwi().
     protected static final int MAX_VM_NUMBER_RETRIES = 5;
@@ -1351,8 +1355,12 @@ public class NotificationMgr implements CallerInfoAsyncQuery.OnQueryCompleteList
         if (DBG) log("showDataDisconnectedRoaming()...");
 
         // "Mobile network settings" screen / dialog
-        Intent intent = new Intent(mContext,
-                com.android.phone.MobileNetworkSettings.class);
+        Intent intent;
+        if(MSimTelephonyManager.getDefault().isMultiSimEnabled()) {
+            intent = new Intent(mContext, com.android.phone.MSimMobileNetworkSettings.class);
+        } else {
+            intent = new Intent(mContext, com.android.phone.MobileNetworkSettings.class);
+        }
 
         Notification notification = new Notification(
                 android.R.drawable.stat_sys_warning, // icon
@@ -1381,7 +1389,7 @@ public class NotificationMgr implements CallerInfoAsyncQuery.OnQueryCompleteList
      * Display the network selection "no service" notification
      * @param operator is the numeric operator number
      */
-    private void showNetworkSelection(String operator) {
+    private void showNetworkSelection(String operator, int subscription) {
         if (DBG) log("showNetworkSelection(" + operator + ")...");
 
         String titleText = mContext.getString(
@@ -1402,19 +1410,25 @@ public class NotificationMgr implements CallerInfoAsyncQuery.OnQueryCompleteList
         // Use NetworkSetting to handle the selection intent
         intent.setComponent(new ComponentName("com.android.phone",
                 "com.android.phone.NetworkSetting"));
-        PendingIntent pi = PendingIntent.getActivity(mContext, 0, intent, 0);
+        intent.putExtra(SUBSCRIPTION_KEY, subscription);
+        PendingIntent pi = PendingIntent.getActivity(mContext, subscription, intent, 0);
 
         notification.setLatestEventInfo(mContext, titleText, expandedText, pi);
 
-        mNotificationManager.notify(SELECTED_OPERATOR_FAIL_NOTIFICATION, notification);
+        mNotificationManager.notify(SELECTED_OPERATOR_FAIL_NOTIFICATION + subscription,
+                notification);
     }
 
     /**
      * Turn off the network selection "no service" notification
      */
-    private void cancelNetworkSelection() {
+    private void cancelNetworkSelection(int subscription) {
         if (DBG) log("cancelNetworkSelection()...");
-        mNotificationManager.cancel(SELECTED_OPERATOR_FAIL_NOTIFICATION);
+        mNotificationManager.cancel(SELECTED_OPERATOR_FAIL_NOTIFICATION + subscription);
+    }
+
+    void updateNetworkSelection(int serviceState, Phone phone) {
+        updateNetworkSelection(serviceState, phone, 0);
     }
 
     /**
@@ -1422,18 +1436,28 @@ public class NotificationMgr implements CallerInfoAsyncQuery.OnQueryCompleteList
      *
      * @param serviceState Phone service state
      */
-    void updateNetworkSelection(int serviceState, Phone phone) {
+    void updateNetworkSelection(int serviceState, Phone phone, int subscription) {
         if (TelephonyCapabilities.supportsNetworkSelection(phone)) {
             // get the shared preference of network_selection.
             // empty is auto mode, otherwise it is the operator alpha name
             // in case there is no operator name, check the operator numeric
             SharedPreferences sp =
                     PreferenceManager.getDefaultSharedPreferences(mContext);
-            String networkSelection =
-                    sp.getString(PhoneBase.NETWORK_SELECTION_NAME_KEY, "");
-            if (TextUtils.isEmpty(networkSelection)) {
-                networkSelection =
-                        sp.getString(PhoneBase.NETWORK_SELECTION_KEY, "");
+            String networkSelection;
+            if(MSimTelephonyManager.getDefault().isMultiSimEnabled() && subscription > 0) {
+                networkSelection = sp.getString(
+                        PhoneBase.NETWORK_SELECTION_NAME_KEY + subscription, "");
+                if (TextUtils.isEmpty(networkSelection)) {
+                    networkSelection = sp.getString(
+                            PhoneBase.NETWORK_SELECTION_KEY + subscription, "");
+                }
+            } else {
+                networkSelection = sp.getString(
+                        PhoneBase.NETWORK_SELECTION_NAME_KEY, "");
+                if (TextUtils.isEmpty(networkSelection)) {
+                    networkSelection =
+                            sp.getString(PhoneBase.NETWORK_SELECTION_KEY, "");
+                }
             }
 
             if (DBG) log("updateNetworkSelection()..." + "state = " +
@@ -1441,14 +1465,14 @@ public class NotificationMgr implements CallerInfoAsyncQuery.OnQueryCompleteList
 
             if (serviceState == ServiceState.STATE_OUT_OF_SERVICE
                     && !TextUtils.isEmpty(networkSelection)) {
-                if (!mSelectedUnavailableNotify) {
-                    showNetworkSelection(networkSelection);
-                    mSelectedUnavailableNotify = true;
+                if (!mSelectedUnavailableNotify[subscription]) {
+                    showNetworkSelection(networkSelection, subscription);
+                    mSelectedUnavailableNotify[subscription] = true;
                 }
             } else {
-                if (mSelectedUnavailableNotify) {
-                    cancelNetworkSelection();
-                    mSelectedUnavailableNotify = false;
+                if (mSelectedUnavailableNotify[subscription]) {
+                    cancelNetworkSelection(subscription);
+                    mSelectedUnavailableNotify[subscription] = false;
                 }
             }
         }
