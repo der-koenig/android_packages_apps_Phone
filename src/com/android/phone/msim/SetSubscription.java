@@ -71,7 +71,7 @@ public class SetSubscription extends PreferenceActivity implements View.OnClickL
     private static final String TAG = "SetSubscription";
     public static final int SUBSCRIPTION_INDEX_INVALID = 99999;
 
-    private TextView mOkButton, mCancelButton;
+    private TextView mOkButton;
     CheckBoxPreference subArray[];
     private boolean subErr = false;
     private SubscriptionData[] mCardSubscrInfo;
@@ -79,6 +79,7 @@ public class SetSubscription extends PreferenceActivity implements View.OnClickL
     private SubscriptionData mUserSelSub;
     private SubscriptionManager mSubscriptionManager;
     private CardSubscriptionManager mCardSubscriptionManager;
+    private boolean mShouldShowInProgressDialog = false;
 
     //String keys for preference lookup
     private static final String PREF_PARENT_KEY = "subscr_parent";
@@ -113,8 +114,6 @@ public class SetSubscription extends PreferenceActivity implements View.OnClickL
 
             mOkButton = (TextView) findViewById(R.id.ok);
             mOkButton.setOnClickListener(this);
-            mCancelButton = (TextView) findViewById(R.id.cancel);
-            mCancelButton.setOnClickListener(this);
 
             // To store the selected subscriptions
             // index 0 for sub0 and index 1 for sub1
@@ -306,8 +305,6 @@ public class SetSubscription extends PreferenceActivity implements View.OnClickL
     public void onClick(View v) {
         if (v == mOkButton) {
             setSubscription();
-        } else if (v == mCancelButton) {
-            finish();
         }
     }
 
@@ -414,11 +411,17 @@ public class SetSubscription extends PreferenceActivity implements View.OnClickL
             if (deactRequiredCount >= MAX_SUBSCRIPTIONS) {
                 displayErrorDialog(R.string.deact_all_sub_not_supported);
             } else {
+                mSubscriptionManager.registerForSetSubscriptionCompleted(mHandler,
+                        EVENT_SET_SUBSCRIPTION_DONE, null);
                 boolean ret = mSubscriptionManager.setSubscription(mUserSelSub);
                 if (ret) {
-                    showDialog(DIALOG_SET_SUBSCRIPTION_IN_PROGRESS);
-                    mSubscriptionManager.registerForSetSubscriptionCompleted(mHandler,
-                            EVENT_SET_SUBSCRIPTION_DONE, null);
+                    mShouldShowInProgressDialog =
+                            mSubscriptionManager.isSetSubscriptionInProgress();
+                    if(mShouldShowInProgressDialog) {
+                        showDialog(DIALOG_SET_SUBSCRIPTION_IN_PROGRESS);
+                    } else {
+                        finish();
+                    }
                 } else {
                     //TODO: Already some set sub in progress. Display a Toast?
                 }
@@ -473,6 +476,7 @@ public class SetSubscription extends PreferenceActivity implements View.OnClickL
                 case EVENT_SET_SUBSCRIPTION_DONE:
                     Log.d(TAG, "EVENT_SET_SUBSCRIPTION_DONE");
                     mSubscriptionManager.unRegisterForSetSubscriptionCompleted(mHandler);
+                    mShouldShowInProgressDialog = false;
                     dismissDialog(DIALOG_SET_SUBSCRIPTION_IN_PROGRESS);
                     getPreferenceScreen().setEnabled(true);
                     ar = (AsyncResult) msg.obj;
