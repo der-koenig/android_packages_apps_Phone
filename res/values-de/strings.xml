@@ -187,10 +187,15 @@
     <string name="roaming" msgid="8871412572928323707">"Daten-Roaming"</string>
     <string name="roaming_enable" msgid="7331106985174381987">"Bei Roaming mit Datendienst verbinden"</string>
     <string name="roaming_disable" msgid="1843417228755568110">"Bei Roaming mit Datendienst verbinden"</string>
+    <string name="national_roaming">Nationales Daten-Roaming</string>
+    <string name="national_roaming_enable">Bei nationalem Roaming mit Datendienst verbinden</string>
+    <string name="national_roaming_disable">Bei nationalem Roaming nicht mit Datendienst verbinden</string>
     <string name="roaming_reenable_message" msgid="8913735676127858115">"Die Datenverbindung wurde unterbrochen, weil Sie Ihr privates Netzwerk verlassen haben und Daten-Roaming nicht aktiviert ist."</string>
     <string name="roaming_warning" msgid="7820963598559553967">"Daten-Roaming zulassen? Es können beträchtliche Roaming-Gebühren anfallen!"</string>
     <string name="gsm_umts_options" msgid="6538311689850981686">"GSM-/UMTS-Optionen"</string>
     <string name="cdma_options" msgid="4016822858172249884">"CDMA-Optionen"</string>
+    <string name="network_settings_sel_sub">SIM-Karte wählen</string>
+    <string name="summary_manage_subscriptions">Mobilfunkeinstellungen für SIM-Karten festlegen</string>
     <string name="throttle_data_usage" msgid="3715677828160555808">"Datenverbrauch"</string>
     <string name="throttle_current_usage" msgid="8762280193043815361">"Im aktuellen Zeitraum verwendete Daten"</string>
     <string name="throttle_time_frame" msgid="1915198770363734685">"Zeitraum des Datenverbrauchs"</string>
@@ -315,6 +320,15 @@
   </string-array>
     <string name="cdma_activate_device" msgid="3793805892364814518">"Gerät aktivieren"</string>
     <string name="cdma_lte_data_service" msgid="4255018217292548962">"Datendienst einrichten"</string>
+    <string name="call_ind_services">Telefonieunabhängige Dienste</string>
+    <string name="callind_multi_sim">SIM-Karte wählen</string>
+    <string name="callind">Telefonieunabhängige Dienste</string>
+    <string name="sub1">SIM 1</string>
+    <string name="sub1_summary">Einstellungen für SIM 1</string>
+    <string name="sub2">SIM 2</string>
+    <string name="sub2_summary">Einstellungen für SIM 2</string>
+    <string name="prompt">Nachfragen</string>
+    <string name="prompt_user">Nachfragen</string>
     <string name="fdn" msgid="7878832555095183202">"Anrufbegrenzung"</string>
     <string name="manage_fdn_list" msgid="8777755791892122369">"Zugelassene Rufnummern"</string>
     <string name="fdn_activation" msgid="2156479741307463576">"Aktivierung der Anrufbegrenzung"</string>
@@ -373,6 +387,7 @@
     <string name="disable_pin_ok" msgid="5596999379593924850">"PIN-Abfrage für SIM-Karte deaktiviert"</string>
     <string name="pin_failed" msgid="2298841192582192277">"Die eingegebene PIN ist falsch."</string>
     <string name="pin_changed" msgid="4365538014588501049">"PIN der SIM-Karte geändert"</string>
+    <string name="pin2_unblocked">PIN2 entsperrt!</string>
     <string name="puk_requested" msgid="3898394204193202803">"Passwort falsch, SIM-Karte gesperrt! Eingabe des PUK2 erforderlich."</string>
     <string name="enter_pin2_text" msgid="8339444124477720345">"PIN2"</string>
     <string name="oldPin2Label" msgid="8559146795026261502">"Alte PIN2"</string>
@@ -387,6 +402,8 @@
     <string name="label_puk2_code" msgid="302845876240219560">"PUK2 eingeben"</string>
     <string name="fdn_enable_puk2_requested" msgid="4262894949634885773">"Passwort falsch. Ändern Sie die PIN2 und versuchen Sie es erneut."</string>
     <string name="puk2_requested" msgid="8909278021238716877">"Passwort falsch, SIM-Karte gesperrt. Eingabe des PUK2 erforderlich."</string>
+    <string name="puk2_blocked">PUK2 dauerhaft gesperrt.</string>
+    <string name="pin2_attempts">\nVerbleibende Versuche:</string>
     <string name="doneButton" msgid="2859593360997984240">"Fertig"</string>
     <string name="caller_manage_header" msgid="3231519674734638786">"Telefonkonferenz <xliff:g id="CONF_CALL_TIME">%s</xliff:g>"</string>
     <string name="voicemail_settings_number_label" msgid="8524164258691887790">"Mailboxnummer"</string>
@@ -625,4 +642,56 @@
     <string name="vibrate_on_ring_title" msgid="9197564612065258960">"Beim Klingeln vibrieren"</string>
     <string name="dtmf_tone_enable_title" msgid="827601042915852989">"Wähltastentöne"</string>
     <string name="preference_category_ringtone" msgid="9007490591910078324">"Klingelton"</string>
+    <string name="set_subscription">SIM-Karten festlegen</string>
+    <string name="card_01">SIM 1</string>
+    <string name="card_02">SIM 2</string>
+    <string name="place_a_call1">SIM 1</string>
+    <string name="place_a_call2">SIM 2</string>
+    <string name="count_down">Sekunden: </string>
+    <string name="call_number">Nr.: </string>
+    <string name="cancel_call">Abbrechen</string>
+    <string name="set_subscription_error_atleast_one">Sie müssen mindestens eine Karte auswählen.</string>
+    <string name="sub_1">SIM 1</string>
+    <string name="sub_2">SIM 2</string>
+    <string name="set_uicc_subscription_progress">Einstellungen werden gespeichert...</string>
+    <string name="set_sub_success">Karteneinstellungen erfolgreich gespeichert</string>
+    <string name="set_sub_failed">Fehler beim Speichern der Einstellungen</string>
+    <string name="set_sub_1">SIM 1: </string>
+    <string name="set_sub_2">SIM 2: </string>
+    <string name="set_sub_activate_success">Erfolgreich aktiviert</string>
+    <string name="set_sub_deactivate_success">Erfolgreich deaktiviert</string>
+    <string name="set_sub_activate_failed">Aktivierung fehlgeschlagen</string>
+    <string name="set_sub_deactivate_failed">Deaktiviertung fehlgeschlagen</string>
+    <string name="set_sub_activate_not_supported">Aktivierung nicht unterstützt</string>
+    <string name="set_sub_deactivate_not_supported">Deaktivierung nicht unterstützt</string>
+    <string name="set_sub_no_change">Keine Änderungen vorgenommen</string>
+    <string name="new_cards_available">Neue SIM-Karte verfügbar. Bitte passen sie die SIM-Einstellungen an.</string>
+    <string name="config_sub_title">SIM-Karten-Einstellungen</string>
+    <string name="deact_all_sub_not_supported">Deaktivierung aller SIM-Karten wird nicht unterstützt.</string>
+    <string name="set_sub_not_supported_phone_in_call">Aktivieren oder Deaktivieren von SIM-Karten während eines Telefongesprächs ist nicht möglich.</string>
+    <string name="label_subscription">für SIM-Karte</string>
+    <string name="ContactScreen">SIM-Karten-Kontakt hinzufügen/entfernen</string>
+    <string name="ExportContactScreen">Telefonkontakte auf SIM-Karte exportieren</string>
+    <string name="addSimEntries">SIM-Karten-Kontakt hinzufügen</string>
+    <string name="deleteAllSimEntries">Alle SIM-Karten-Kontakte löschen</string>
+    <string name="deleteSimContacts">SIM-Karten-Kontakte werden gelöscht</string>
+    <string name="editContact">Bearbeiten</string>
+    <string name="sendSms">SMS senden</string>
+    <string name="delete">Löschen</string>
+    <string name="dial">Anrufen</string>
+    <string name="enterName">Name eingeben:</string>
+    <string name="enterNumber">Telefnonummer eingeben:</string>
+    <string name="contactAddSuccess">SIM-Karten-Kontakt erfolgreich erstellt</string>
+    <string name="contactAddFailed">SIM-Karten-Kontakt konnte nicht erstellt werden</string>
+    <string name="contactUpdateSuccess">SIM-Karten-Kontakt erfolgreich geändert</string>
+    <string name="contactUpdateFailed">SIM-Karten-Kontakt konnte nicht geändert werden</string>
+    <string name="contactdeleteSuccess">SIM-Karten-Kontakt erfolgreich gelöscht</string>
+    <string name="contactdeleteFailed">SIM-Karten-Kontakt konnte nicht gelöscht werden</string>
+    <string name="allContactdeleteSuccess">Alle SIM-Karten-Kontakte erfolgreich gelöscht</string>
+    <string name="allContactdeleteFailed">Löschen aller SIM-Karten-Kontakte fehlgeschlagen</string>
+    <string name="allContactdeleteCanceled">Löschen aller SIM-Karten-Kontakte abgebrochen</string>
+    <string name="exportAllcontatsSuccess">Alle SIM-Karten-Kontakte erfolgreich exportiert</string>
+    <string name="exportAllcontatsFailed">Exportieren aller SIM-Karten-Kontakte fehlgeschlagen</string>
+    <string name="emptynumber">Telefonnummer eingeben:</string>
+    <string name="invalidname">Bitte verwenden sie kein \'=\' für den Eintrag</string>
 </resources>
