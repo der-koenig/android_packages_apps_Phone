@@ -1030,6 +1030,7 @@
     <string name="notification_voicemail_no_vm_number">Voicemail number unknown</string>
     <!-- Label for the "No service" notification item, when expanded. -->
     <string name="notification_network_selection_title">No service</string>
+    <string name="notification_network_selection_title_msim">No service (<xliff:g id="subscription">%s</xliff:g>)</string>
     <!-- Label for the expanded "No service" notification item, including the
          operator name set by user -->
     <string name="notification_network_selection_text">Selected network (<xliff:g id="operator_name">%s</xliff:g>) unavailable</string>

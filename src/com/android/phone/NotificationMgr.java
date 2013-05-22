@@ -1394,6 +1394,10 @@ public class NotificationMgr implements CallerInfoAsyncQuery.OnQueryCompleteList
 
         String titleText = mContext.getString(
                 R.string.notification_network_selection_title);
+        if (MSimTelephonyManager.getDefault().isMultiSimEnabled()) {
+            titleText = mContext.getString(
+                R.string.notification_network_selection_title_msim, "SIM" + (subscription + 1));
+        }
         String expandedText = mContext.getString(
                 R.string.notification_network_selection_text, operator);
 
@@ -1464,6 +1468,7 @@ public class NotificationMgr implements CallerInfoAsyncQuery.OnQueryCompleteList
                     serviceState + " new network " + networkSelection);
 
             if (serviceState == ServiceState.STATE_OUT_OF_SERVICE
+                    && MSimTelephonyManager.getDefault().isSubActive(subscription)
                     && !TextUtils.isEmpty(networkSelection)) {
                 if (!mSelectedUnavailableNotify[subscription]) {
                     showNetworkSelection(networkSelection, subscription);
