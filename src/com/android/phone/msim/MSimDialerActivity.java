@@ -37,6 +37,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemProperties;
@@ -61,6 +62,9 @@ import com.android.internal.telephony.msim.SubscriptionManager;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
 import android.telephony.ServiceState;
+
+import java.util.List;
+import java.util.ArrayList;
 
 import static com.android.internal.telephony.MSimConstants.SUBSCRIPTION_KEY;
 
@@ -154,7 +158,6 @@ public class MSimDialerActivity extends Activity {
                 (ViewGroup) findViewById(R.id.layout_root));
 
         AlertDialog.Builder builder = new AlertDialog.Builder(MSimDialerActivity.this);
-        builder.setView(layout);
         builder.setOnKeyListener(new DialogInterface.OnKeyListener() {
             public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
                 Log.d(TAG, "key code is :" + keyCode);
@@ -182,8 +185,6 @@ public class MSimDialerActivity extends Activity {
             }
         });
 
-        mAlertDialog = builder.create();
-
         mTextNumber = (TextView)layout.findViewById(R.id.CallNumber);
 
         String vm = "";
@@ -194,7 +195,7 @@ public class MSimDialerActivity extends Activity {
             mTextNumber.setText(mCallNumber + "VoiceMail" );
             Log.d(TAG, "its voicemail!!!");
         } else {
-            mTextNumber.setText(mCallNumber + mNumber);
+            builder.setTitle(mCallNumber + " " + mNumber);
         }
 
         Button callCancel = (Button)layout.findViewById(R.id.callcancel);
@@ -204,6 +205,9 @@ public class MSimDialerActivity extends Activity {
                 startOutgoingCall(INVALID_SUB);
             }
         });
+
+        List<String> subList = new ArrayList<String>();
+        final List<Integer> callMarkList = new ArrayList<Integer>();
 
         Button[] callButton = new Button[mPhoneCount];
         int[] callMark = new int[mPhoneCount];
@@ -215,12 +219,24 @@ public class MSimDialerActivity extends Activity {
             if (index == 0) {
                 callMark[index] = R.id.callmark1;
                 subString[index] = R.string.sub_1;
+                if(subManager.isSubActive(index)) {
+                    subList.add(getResources().getString(R.string.sub_1));
+                    callMarkList.add(MSimConstants.SUB1);
+                }
             } else if (index == 1) {
                 callMark[index] = R.id.callmark2;
                 subString[index] = R.string.sub_2;
+                if(subManager.isSubActive(index)) {
+                    subList.add(getResources().getString(R.string.sub_2));
+                    callMarkList.add(MSimConstants.SUB2);
+                }
             } else {
                 callMark[index] = R.id.callmark3;
                 subString[index] = R.string.sub_3;
+                if(subManager.isSubActive(index)) {
+                    subList.add(getResources().getString(R.string.sub_3));
+                    callMarkList.add(MSimConstants.SUB3);
+                }
             }
 
             if (subManager.isSubActive(index)) {
@@ -229,39 +245,21 @@ public class MSimDialerActivity extends Activity {
             }
         }
 
-        for (index = 0; index < mPhoneCount; index++) {
-            callButton[index] =  (Button) layout.findViewById(callMark[index]);
-            callButton[index].setText(subString[index]);
-            callButton[index].setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    mAlertDialog.dismiss();
-                    switch (v.getId()) {
-                    case R.id.callmark1:
-                        startOutgoingCall(MSimConstants.SUB1);
-                        break;
-                    case R.id.callmark2:
-                        startOutgoingCall(MSimConstants.SUB2);
-                        break;
-                    case R.id.callmark3:
-                        startOutgoingCall(MSimConstants.SUB3);
-                        break;
+        builder.setItems(subList.toArray(new CharSequence[subList.size()]), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface d, int choice) {
+                        mAlertDialog.dismiss();
+                        startOutgoingCall(callMarkList.get(choice));
                     }
                 }
-            });
-        }
+            );
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface d, int choice) {
+                mAlertDialog.dismiss();
+                startOutgoingCall(INVALID_SUB);
+            }
+        });
 
-
-        if (MSimConstants.SUB1 == MSimPhoneFactory.getVoiceSubscription()) {
-            callButton[MSimConstants.SUB1].setBackgroundResource(R.drawable.highlight_btn_call);
-        } else if (MSimConstants.SUB2 == MSimPhoneFactory.getVoiceSubscription()) {
-            callButton[MSimConstants.SUB2].setBackgroundResource(R.drawable.highlight_btn_call);
-        } else if (MSimConstants.SUB3 == MSimPhoneFactory.getVoiceSubscription()) {
-            callButton[MSimConstants.SUB3].setBackgroundResource(R.drawable.highlight_btn_call);
-        } else {
-            Log.e(TAG, "Voice subscription " +
-                    MSimPhoneFactory.getVoiceSubscription() + " is not valid");
-        }
-
+        mAlertDialog = builder.create();
         mAlertDialog.show();
     }
 
