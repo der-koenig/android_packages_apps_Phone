@@ -738,6 +738,8 @@
     <!-- button name for direct launch of Call Feature screen for Single Sim Functionality -->
     <string name="callind">Call Feature Settings</string>
 
+    <string name="sub">Subscription</string>
+
     <!-- multi sub one, setting option name -->
     <string name="sub1">Subscription 1</string>
     <!-- multi mode settings screen, setting summary text -->
@@ -1698,11 +1700,11 @@
     <!-- Set Subscription screen: set subscription option name -->
     <string name="set_subscription">Select subscriptions</string>
     <!-- Set Subscription screen: label Card 1 -->
-    <string name="card_01">Card 1 / SUB 1</string>
+    <string name="card_01">Card 1 / Subscription 1</string>
     <!-- Set Subscription screen: label Card 2 -->
-    <string name="card_02">Card 2 / SUB 2</string>
+    <string name="card_02">Card 2 / Subscription 2</string>
     <!-- Set Subscription screen: label Card 3 -->
-    <string name="card_03">Card 3 / SUB 3</string>
+    <string name="card_03">Card 3 / Subscription 3</string>
 
     <!-- Set dual dialer for MultiSim -->
     <string name="place_a_call1">Subscription 1</string>
@@ -1714,11 +1716,11 @@
     <!-- Set Subscription screen: Message shown in error dialog -->
     <string name="set_subscription_error_atleast_one">Select atleast one subscription</string>
     <!-- Set Subscription screen: label sub 1 -->
-    <string name="sub_1">SUB 1</string>
+    <string name="sub_1">Subscription 1</string>
     <!-- Set Subscription screen: label sub 2 -->
-    <string name="sub_2">SUB 2</string>
+    <string name="sub_2">Subscription 2</string>
     <!-- Set Subscription screen: label sub 3 -->
-    <string name="sub_3">SUB 3</string>
+    <string name="sub_3">Subscription 3</string>
     <!-- Set Subscription screen: Progress message -->
     <string name="set_uicc_subscription_progress">Set subscription in progress...</string>
     <!-- Set Subscription screen: Set subscriptio success -->

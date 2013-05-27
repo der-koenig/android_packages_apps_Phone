@@ -323,6 +323,7 @@
     <string name="call_ind_services">Telefonieunabhängige Dienste</string>
     <string name="callind_multi_sim">SIM-Karte wählen</string>
     <string name="callind">Telefonieunabhängige Dienste</string>
+    <string name="sub">SIM</string>
     <string name="sub1">SIM 1</string>
     <string name="sub1_summary">Einstellungen für SIM 1</string>
     <string name="sub2">SIM 2</string>

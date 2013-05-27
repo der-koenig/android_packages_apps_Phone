@@ -76,7 +76,7 @@ public class MSimCallCard extends CallCard {
                 //Get the subscription from current call object.
                 int subscription = call.getPhone().getSubscription();
                 subscription++;
-                String subInfo = "SUB" + subscription;
+                String subInfo = getResources().getString(R.string.sub) + " " + subscription;
                 if (DBG) Log.v(LOG_TAG, "Setting subinfo: " + subInfo);
                 mSubInfo.setText(subInfo);
                 mSubInfo.setVisibility(View.VISIBLE);
