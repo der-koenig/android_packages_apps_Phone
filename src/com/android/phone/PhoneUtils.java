@@ -45,6 +45,7 @@ import android.os.SystemProperties;
 import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.telephony.PhoneNumberUtils;
+import android.telephony.MSimTelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -1720,6 +1721,9 @@ public class PhoneUtils {
                         ci = newCi;
                     }
                 }
+
+                int subId = conn.getCall().getPhone().getSubscription();
+                ci.subscription = subId;
 
                 if (DBG) log("==> Stashing CallerInfo " + ci + " into the connection...");
                 conn.setUserData(ci);

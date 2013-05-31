@@ -29,6 +29,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.ContactsContract.Contacts;
+import android.telephony.MSimTelephonyManager;
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 import android.text.format.DateUtils;

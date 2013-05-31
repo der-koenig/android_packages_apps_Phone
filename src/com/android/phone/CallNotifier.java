@@ -54,6 +54,7 @@ import android.provider.Settings;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
+import android.telephony.MSimTelephonyManager;
 import android.text.TextUtils;
 import android.util.EventLog;
 import android.util.Log;
@@ -1120,7 +1121,7 @@ public class CallNotifier extends Handler
 
             mApplication.notificationMgr.notifyMissedCall(ci.name, ci.phoneNumber,
                     ci.phoneLabel, ci.cachedPhoto, ci.cachedPhotoIcon,
-                    ((Long) cookie).longValue());
+                    ((Long) cookie).longValue(), ci.subscription);
         } else if (cookie instanceof CallNotifier) {
             if (VDBG) log("CallerInfo query complete (for CallNotifier), "
                     + "updating state for incoming call..");
@@ -1363,6 +1364,7 @@ public class CallNotifier extends Handler
                     PhoneNumberUtils.isLocalEmergencyNumber(number, mApplication.mContext);
             // Set the "type" to be displayed in the call log (see constants in CallLog.Calls)
             final int callLogType;
+            final int subId = c.getCall().getPhone().getSubscription();
             if (c.isIncoming()) {
                 callLogType = (cause == Connection.DisconnectCause.INCOMING_MISSED ?
                                Calls.MISSED_TYPE : Calls.INCOMING_TYPE);
@@ -1416,7 +1418,7 @@ public class CallNotifier extends Handler
                     CallLogAsync.AddCallArgs args =
                             new CallLogAsync.AddCallArgs(
                                 mApplication.mContext, ci, logNumber, presentation,
-                                callLogType, date, duration);
+                                callLogType, date, duration, subId);
                     mCallLog.addCall(args);
                 }
             }
@@ -2007,6 +2009,7 @@ public class CallNotifier extends Handler
                 final long duration = c.getDurationMillis();
                 final int callLogType = mCallWaitingTimeOut ?
                         Calls.MISSED_TYPE : Calls.INCOMING_TYPE;
+                final int subId = c.getCall().getPhone().getSubscription();
 
                 // get the callerinfo object and then log the call with it.
                 Object o = c.getUserData();
@@ -2028,7 +2031,7 @@ public class CallNotifier extends Handler
                 CallLogAsync.AddCallArgs args =
                         new CallLogAsync.AddCallArgs(
                             mApplication.mContext, ci, logNumber, presentation,
-                            callLogType, date, duration);
+                            callLogType, date, duration, subId);
 
                 mCallLog.addCall(args);
 
@@ -2098,8 +2101,9 @@ public class CallNotifier extends Handler
                     number = PhoneUtils.modifyForSpecialCnapCases(mApplication.mContext,
                             ci, number, ci.numberPresentation);
                 }
+                int subId = c.getCall().getPhone().getSubscription();
                 mApplication.notificationMgr.notifyMissedCall(name, number,
-                        ci.phoneLabel, ci.cachedPhoto, ci.cachedPhotoIcon, date);
+                        ci.phoneLabel, ci.cachedPhoto, ci.cachedPhotoIcon, date, subId);
             }
         } else {
             // getCallerInfo() can return null in rare cases, like if we weren't

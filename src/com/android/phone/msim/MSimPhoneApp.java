@@ -21,6 +21,7 @@
 package com.android.phone;
 
 import android.app.KeyguardManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothHeadset;
 import android.bluetooth.BluetoothProfile;
@@ -641,6 +642,41 @@ public class MSimPhoneApp extends PhoneApp {
         }
     }
 
+    public static class MSimNotificationBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            // TODO: use "if (VDBG)" here.
+            Log.d(LOG_TAG, "Broadcast from Notification: " + action);
+
+            if (action.equals(ACTION_CALL_BACK_FROM_NOTIFICATION)) {
+                // Collapse the expanded notification and the notification item itself.
+                closeSystemDialogs(context);
+                clearMissedCallNotification(context);
+
+                int subId = intent.getIntExtra(SUBSCRIPTION_KEY,
+                        MSimTelephonyManager.getDefault().getDefaultSubscription());
+                Intent callIntent = new Intent(Intent.ACTION_CALL_PRIVILEGED, intent.getData());
+                callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                callIntent.putExtra(SUBSCRIPTION_KEY, subId);
+                context.startActivity(callIntent);
+            }
+        }
+
+        private void closeSystemDialogs(Context context) {
+            Intent intent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+            context.sendBroadcast(intent);
+        }
+
+        private void clearMissedCallNotification(Context context) {
+            Intent clearIntent = new Intent(context, ClearMissedCallsService.class);
+            clearIntent.setAction(ClearMissedCallsService.ACTION_CLEAR_MISSED_CALLS);
+            context.startService(clearIntent);
+        }
+    }
+
+
     // updates cdma variables of PhoneApp
     private void updatePhoneAppCdmaVariables(int subscription) {
         Log.v(LOG_TAG,"updatePhoneAppCdmaVariables" + subscription);
@@ -790,6 +826,15 @@ public class MSimPhoneApp extends PhoneApp {
 
         // Update the Proximity sensor based on keyboard state
         updateProximitySensorMode(mCM.getState());
+    }
+
+    /* package */ static PendingIntent getCallBackPendingIntent(Context context, String number,
+            int subId) {
+        Intent intent = new Intent(ACTION_CALL_BACK_FROM_NOTIFICATION,
+                Uri.fromParts(Constants.SCHEME_TEL, number, null),
+                context, MSimNotificationBroadcastReceiver.class);
+        intent.putExtra(SUBSCRIPTION_KEY, subId);
+        return PendingIntent.getBroadcast(context, subId, intent, 0);
     }
 
 }

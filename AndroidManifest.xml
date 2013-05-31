@@ -650,6 +650,11 @@
                 <action android:name="com.android.phone.ACTION_SEND_SMS_FROM_NOTIFICATION" />
             </intent-filter>
         </receiver>
+        <receiver android:name="MSimPhoneApp$MSimNotificationBroadcastReceiver" exported="false">
+            <intent-filter>
+                <action android:name="com.android.phone.ACTION_CALL_BACK_FROM_NOTIFICATION" />
+            </intent-filter>
+        </receiver>
 
         <activity android:name="SetSubscription"
             android:label="@string/set_subscription"

@@ -82,6 +82,7 @@ public class NotificationMgr implements CallerInfoAsyncQuery.OnQueryCompleteList
         Calls.DATE,
         Calls.DURATION,
         Calls.TYPE,
+        Calls.SUB_ID,
     };
 
     // notification types
@@ -326,6 +327,7 @@ public class NotificationMgr implements CallerInfoAsyncQuery.OnQueryCompleteList
              */
             public String type;
             public long date;
+            public int subId;
         }
 
         public QueryHandler(ContentResolver cr) {
@@ -410,7 +412,7 @@ public class NotificationMgr implements CallerInfoAsyncQuery.OnQueryCompleteList
                             }
                             // We couldn't find person Uri, so we're sure we cannot obtain a photo.
                             // Call notifyMissedCall() right now.
-                            notifyMissedCall(n.name, n.number, n.type, null, null, n.date);
+                            notifyMissedCall(n.name, n.number, n.type, null, null, n.date, n.subId);
                         }
 
                         if (DBG) log("closing contact cursor.");
@@ -426,7 +428,7 @@ public class NotificationMgr implements CallerInfoAsyncQuery.OnQueryCompleteList
                 int token, Drawable photo, Bitmap photoIcon, Object cookie) {
             if (DBG) log("Finished loading image: " + photo);
             NotificationInfo n = (NotificationInfo) cookie;
-            notifyMissedCall(n.name, n.number, n.type, photo, photoIcon, n.date);
+            notifyMissedCall(n.name, n.number, n.type, photo, photoIcon, n.date, n.subId);
         }
 
         /**
@@ -439,6 +441,7 @@ public class NotificationMgr implements CallerInfoAsyncQuery.OnQueryCompleteList
             n.number = cursor.getString(cursor.getColumnIndexOrThrow(Calls.NUMBER));
             n.type = cursor.getString(cursor.getColumnIndexOrThrow(Calls.TYPE));
             n.date = cursor.getLong(cursor.getColumnIndexOrThrow(Calls.DATE));
+            n.subId = cursor.getInt(cursor.getColumnIndexOrThrow(Calls.SUB_ID));
 
             // make sure we update the number depending upon saved values in
             // CallLog.addCall().  If either special values for unknown or
@@ -483,9 +486,11 @@ public class NotificationMgr implements CallerInfoAsyncQuery.OnQueryCompleteList
      * the most suitable for {@link android.app.Notification.Builder#setLargeIcon(Bitmap)}, this
      * should be used when non-null.
      * @param date the time when the missed call happened
+     * @param subId the subscription on which the call came in
      */
     /* package */ void notifyMissedCall(
-            String name, String number, String type, Drawable photo, Bitmap photoIcon, long date) {
+            String name, String number, String type, Drawable photo, Bitmap photoIcon, long date,
+                    int subId) {
 
         // When the user clicks this notification, we go to the call log.
         final Intent callLogIntent = PhoneApp.createCallLogIntent();
@@ -501,13 +506,11 @@ public class NotificationMgr implements CallerInfoAsyncQuery.OnQueryCompleteList
         if (VDBG) {
             log("notifyMissedCall(). name: " + name + ", number: " + number
                 + ", label: " + type + ", photo: " + photo + ", photoIcon: " + photoIcon
-                + ", date: " + date);
+                + ", date: " + date + ", subId: " + subId);
         }
 
-        // title resource id
-        int titleResId;
         // the text in the notification's line 1 and 2.
-        String expandedText, callName;
+        String titleText, expandedText, callName;
 
         // increment number of missed calls.
         mNumberMissedCalls++;
@@ -527,10 +530,15 @@ public class NotificationMgr implements CallerInfoAsyncQuery.OnQueryCompleteList
         // 1 missed call: call name
         // more than 1 missed call: <number of calls> + "missed calls"
         if (mNumberMissedCalls == 1) {
-            titleResId = R.string.notification_missedCallTitle;
+            if(MSimTelephonyManager.getDefault().isMultiSimEnabled()) {
+                titleText = mContext.getString(
+                        R.string.notification_missedCallTitleMSim, (subId + 1));
+            } else {
+                titleText = mContext.getString(R.string.notification_missedCallTitle);
+            }
             expandedText = callName;
         } else {
-            titleResId = R.string.notification_missedCallsTitle;
+            titleText = mContext.getString(R.string.notification_missedCallsTitle);
             expandedText = mContext.getString(R.string.notification_missedCallsMsg,
                     mNumberMissedCalls);
         }
@@ -539,7 +547,7 @@ public class NotificationMgr implements CallerInfoAsyncQuery.OnQueryCompleteList
         builder.setSmallIcon(android.R.drawable.stat_notify_missed_call)
                 .setTicker(mContext.getString(R.string.notification_missedCallTicker, callName))
                 .setWhen(date)
-                .setContentTitle(mContext.getText(titleResId))
+                .setContentTitle(titleText)
                 .setContentText(expandedText)
                 .setContentIntent(PendingIntent.getActivity(mContext, 0, callLogIntent, 0))
                 .setAutoCancel(true)
@@ -555,9 +563,15 @@ public class NotificationMgr implements CallerInfoAsyncQuery.OnQueryCompleteList
                 && !TextUtils.equals(number, mContext.getString(R.string.unknown))){
             if (DBG) log("Add actions with the number " + number);
 
-            builder.addAction(R.drawable.stat_sys_phone_call,
-                    mContext.getString(R.string.notification_missedCall_call_back),
-                    PhoneApp.getCallBackPendingIntent(mContext, number));
+            if (MSimTelephonyManager.getDefault().isMultiSimEnabled()) {
+                builder.addAction(R.drawable.stat_sys_phone_call,
+                        mContext.getString(R.string.notification_missedCall_call_back),
+                        MSimPhoneApp.getCallBackPendingIntent(mContext, number, subId));
+            } else {
+                builder.addAction(R.drawable.stat_sys_phone_call,
+                        mContext.getString(R.string.notification_missedCall_call_back),
+                        PhoneApp.getCallBackPendingIntent(mContext, number));
+            }
 
             builder.addAction(R.drawable.ic_text_holo_dark,
                     mContext.getString(R.string.notification_missedCall_message),
@@ -1396,7 +1410,7 @@ public class NotificationMgr implements CallerInfoAsyncQuery.OnQueryCompleteList
                 R.string.notification_network_selection_title);
         if (MSimTelephonyManager.getDefault().isMultiSimEnabled()) {
             titleText = mContext.getString(
-                R.string.notification_network_selection_title_msim, "SIM" + (subscription + 1));
+                R.string.notification_network_selection_title_msim, (subscription + 1));
         }
         String expandedText = mContext.getString(
                 R.string.notification_network_selection_text, operator);

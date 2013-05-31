@@ -1005,6 +1005,7 @@
     <!-- Notification strings -->
     <!-- Missed call notification label, used when there's exactly one missed call -->
     <string name="notification_missedCallTitle">Missed call</string>
+    <string name="notification_missedCallTitleMSim">Missed call (SIM <xliff:g id="sub_num">%d</xliff:g>)</string>
     <!-- Missed call notification label, used when there are two or more missed calls -->
     <string name="notification_missedCallsTitle">Missed calls</string>
     <!-- Missed call notification message used when there are multiple missed calls -->
@@ -1032,7 +1033,7 @@
     <string name="notification_voicemail_no_vm_number">Voicemail number unknown</string>
     <!-- Label for the "No service" notification item, when expanded. -->
     <string name="notification_network_selection_title">No service</string>
-    <string name="notification_network_selection_title_msim">No service (<xliff:g id="subscription">%s</xliff:g>)</string>
+    <string name="notification_network_selection_title_msim">No service (SIM <xliff:g id="subscription">%d</xliff:g>)</string>
     <!-- Label for the expanded "No service" notification item, including the
          operator name set by user -->
     <string name="notification_network_selection_text">Selected network (<xliff:g id="operator_name">%s</xliff:g>) unavailable</string>

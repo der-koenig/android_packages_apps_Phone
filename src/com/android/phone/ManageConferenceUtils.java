@@ -17,6 +17,7 @@
 package com.android.phone;
 
 import android.os.SystemProperties;
+import android.telephony.MSimTelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -60,6 +61,11 @@ public class ManageConferenceUtils {
 
         @Override
         public void onQueryComplete(int token, Object cookie, CallerInfo ci) {
+            onQueryComplete(token, cookie, ci,
+                    MSimTelephonyManager.getDefault().getDefaultSubscription());
+        }
+
+        public void onQueryComplete(int token, Object cookie, CallerInfo ci, int subId) {
             if (DBG) log("callerinfo query complete, updating UI." + ci);
 
             Connection connection = (Connection) cookie;
