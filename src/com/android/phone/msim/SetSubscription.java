@@ -244,7 +244,6 @@ public class SetSubscription extends PreferenceActivity implements View.OnClickL
     private void populateList() {
         PreferenceScreen prefParent = (PreferenceScreen) getPreferenceScreen().
                 findPreference(PREF_PARENT_KEY);
-        int[] subGroupTitle = {R.string.card_01, R.string.card_02, R.string.card_03};
 
         Log.d(TAG, "populateList:  mCardSubscrInfo.length = " + mCardSubscrInfo.length);
 
@@ -257,7 +256,7 @@ public class SetSubscription extends PreferenceActivity implements View.OnClickL
                 // Create a subgroup for the apps in card 01
                 PreferenceCategory subGroup = new PreferenceCategory(this);
                 subGroup.setKey("sub_group_" + k);
-                subGroup.setTitle(subGroupTitle[k]);
+                subGroup.setTitle(getResources().getString(R.string.card_num, k+1, k+1));
                 prefParent.addPreference(subGroup);
 
                 // Add each element as a CheckBoxPreference to the group

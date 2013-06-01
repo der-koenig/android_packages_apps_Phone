@@ -154,8 +154,6 @@ public class MSimDialerActivity extends Activity {
 
         LayoutInflater inflater = (LayoutInflater) mContext.
                 getSystemService(LAYOUT_INFLATER_SERVICE);
-        View layout = inflater.inflate(R.layout.dialer_ms,
-                (ViewGroup) findViewById(R.id.layout_root));
 
         AlertDialog.Builder builder = new AlertDialog.Builder(MSimDialerActivity.this);
         builder.setOnKeyListener(new DialogInterface.OnKeyListener() {
@@ -185,8 +183,6 @@ public class MSimDialerActivity extends Activity {
             }
         });
 
-        mTextNumber = (TextView)layout.findViewById(R.id.CallNumber);
-
         String vm = "";
         if (mIntent.getData() != null)
             vm =  mIntent.getData().getScheme();
@@ -198,50 +194,16 @@ public class MSimDialerActivity extends Activity {
             builder.setTitle(mCallNumber + " " + mNumber);
         }
 
-        Button callCancel = (Button)layout.findViewById(R.id.callcancel);
-        callCancel.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                mAlertDialog.dismiss();
-                startOutgoingCall(INVALID_SUB);
-            }
-        });
-
         List<String> subList = new ArrayList<String>();
         final List<Integer> callMarkList = new ArrayList<Integer>();
 
-        Button[] callButton = new Button[mPhoneCount];
-        int[] callMark = new int[mPhoneCount];
-        int[] subString = new int[mPhoneCount];
+        String[] subString = new String[mPhoneCount];
 
-        int index = 0;
         SubscriptionManager subManager = SubscriptionManager.getInstance();
-        for (index = 0; index < mPhoneCount; index++) {
-            if (index == 0) {
-                callMark[index] = R.id.callmark1;
-                subString[index] = R.string.sub_1;
-                if(subManager.isSubActive(index)) {
-                    subList.add(getResources().getString(R.string.sub_1));
-                    callMarkList.add(MSimConstants.SUB1);
-                }
-            } else if (index == 1) {
-                callMark[index] = R.id.callmark2;
-                subString[index] = R.string.sub_2;
-                if(subManager.isSubActive(index)) {
-                    subList.add(getResources().getString(R.string.sub_2));
-                    callMarkList.add(MSimConstants.SUB2);
-                }
-            } else {
-                callMark[index] = R.id.callmark3;
-                subString[index] = R.string.sub_3;
-                if(subManager.isSubActive(index)) {
-                    subList.add(getResources().getString(R.string.sub_3));
-                    callMarkList.add(MSimConstants.SUB3);
-                }
-            }
-
-            if (subManager.isSubActive(index)) {
-                Button button = (Button) layout.findViewById(callMark[index]);
-                button.setVisibility(View.VISIBLE);
+        for (int i = 0; i < mPhoneCount; i++) {
+            if(subManager.isSubActive(i)) {
+                subList.add(getResources().getString(R.string.sub_num, i+1));
+                callMarkList.add(i);
             }
         }
 

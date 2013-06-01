@@ -49,9 +49,6 @@ public class SelectSubscription extends PreferenceActivity {
     private static final String PREF_PARENT_KEY = "parent_pref";
     public static final String PACKAGE = "PACKAGE";
     public static final String TARGET_CLASS = "TARGET_CLASS";
-    private int[] resourceIndex = {R.string.sub1, R.string.sub2, R.string.sub3};
-    private int[] summaryIndex = {R.string.sub1_summary, R.string.sub2_summary,
-            R.string.sub3_summary};
 
     private Preference subscriptionPref;
 
@@ -89,7 +86,7 @@ public class SelectSubscription extends PreferenceActivity {
             selectIntent.setAction(Intent.ACTION_MAIN);
             selectIntent.putExtra(SUBSCRIPTION_KEY, i);
             subscriptionPref.setIntent(selectIntent);
-            subscriptionPref.setTitle(resourceIndex[i]);
+            subscriptionPref.setTitle(getResources().getString(R.string.sub_num, i+1));
             subscriptionPref.setEnabled(
                     MSimTelephonyManager.getDefault().isSubActive(i));
             String simOperatorName = MSimTelephonyManager.getDefault().getSimOperatorName(i);

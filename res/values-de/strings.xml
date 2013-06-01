@@ -645,19 +645,14 @@
     <string name="dtmf_tone_enable_title" msgid="827601042915852989">"Wähltastentöne"</string>
     <string name="preference_category_ringtone" msgid="9007490591910078324">"Klingelton"</string>
     <string name="set_subscription">SIM-Karten festlegen</string>
-    <string name="card_01">SIM 1</string>
-    <string name="card_02">SIM 2</string>
-    <string name="place_a_call1">SIM 1</string>
-    <string name="place_a_call2">SIM 2</string>
-    <string name="count_down">Sekunden: </string>
+    <string name="card_num">Card <xliff:g id="subscription">%d</xliff:g> / Subscription <xliff:g id="subscription">%d</xliff:g></string>
     <string name="call_number">Nr.: </string>
     <string name="cancel_call">Abbrechen</string>
-    <string name="set_subscription_error_atleast_one">Sie müssen mindestens eine Karte auswählen.</string>
-    <string name="sub_1">SIM 1</string>
-    <string name="sub_2">SIM 2</string>
+    <string name="set_subscription_error_atleast_one">Wählen Sie mindestens eine Karte aus.</string>
     <string name="set_uicc_subscription_progress">Einstellungen werden gespeichert...</string>
     <string name="set_sub_success">Karteneinstellungen erfolgreich gespeichert</string>
     <string name="set_sub_failed">Fehler beim Speichern der Einstellungen</string>
+    <string name="set_sub_num">SIM <xliff:g id="subscription">%d</xliff:g>:</string>
     <string name="set_sub_1">SIM 1: </string>
     <string name="set_sub_2">SIM 2: </string>
     <string name="set_sub_activate_success">Erfolgreich aktiviert</string>
