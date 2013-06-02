@@ -1404,7 +1404,8 @@ public class NotificationMgr implements CallerInfoAsyncQuery.OnQueryCompleteList
      * @param operator is the numeric operator number
      */
     private void showNetworkSelection(String operator, int subscription) {
-        if (DBG) log("showNetworkSelection(" + operator + ")...");
+        if (DBG) log("showNetworkSelection(" + operator +
+                        ", subscription = " + subscription + ")...");
 
         String titleText = mContext.getString(
                 R.string.notification_network_selection_title);
@@ -1441,7 +1442,7 @@ public class NotificationMgr implements CallerInfoAsyncQuery.OnQueryCompleteList
      * Turn off the network selection "no service" notification
      */
     private void cancelNetworkSelection(int subscription) {
-        if (DBG) log("cancelNetworkSelection()...");
+        if (DBG) log("cancelNetworkSelection()... subscription = " + subscription);
         mNotificationManager.cancel(SELECTED_OPERATOR_FAIL_NOTIFICATION + subscription);
     }
 
@@ -1479,7 +1480,8 @@ public class NotificationMgr implements CallerInfoAsyncQuery.OnQueryCompleteList
             }
 
             if (DBG) log("updateNetworkSelection()..." + "state = " +
-                    serviceState + " new network " + networkSelection);
+                    serviceState + " subscription = " + subscription + 
+                    " new network " + networkSelection);
 
             if (serviceState == ServiceState.STATE_OUT_OF_SERVICE
                     && MSimTelephonyManager.getDefault().isSubActive(subscription)
