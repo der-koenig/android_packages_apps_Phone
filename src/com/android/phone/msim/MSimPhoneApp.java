@@ -568,8 +568,10 @@ public class MSimPhoneApp extends PhoneApp {
                 Log.d(LOG_TAG, "Radio technology switched. Now " + newPhone + " is active.");
                 initForNewRadioTechnology(subscription);
             } else if (action.equals(TelephonyIntents.ACTION_SERVICE_STATE_CHANGED)) {
-                Phone phone = getPhone(subscription);
-                handleServiceStateChanged(intent, phone, subscription);
+                if (intent.getIntExtra(SUBSCRIPTION_KEY, -1) != -1) {
+                    Phone phone = getPhone(subscription);
+                    handleServiceStateChanged(intent, phone, subscription);
+                }
             } else if (action.equals(TelephonyIntents.ACTION_EMERGENCY_CALLBACK_MODE_CHANGED)) {
                 Phone phone = getPhone(subscription);
                 if (TelephonyCapabilities.supportsEcm(phone)) {
